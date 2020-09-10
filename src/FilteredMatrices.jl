@@ -1,5 +1,5 @@
 module FilteredMatrices
 
-using LinearMaps, KrylovKit
+using LinearMaps
 
 end
