@@ -3,6 +3,10 @@ uuid = "d9af566e-5b8c-4205-a764-d8c3ac5960e2"
 authors = ["Pablo San-Jose <pablo.sanjose@csic.es>", "Bruno Amorim <amorim.bac@gmail.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+KrylovKit = "0b1a1467-8014-51b9-945f-bf0ae24f4b77"
+LinearMaps = "7a12625a-238d-50fd-b39a-03d52299707e"
+
 [compat]
 julia = "1"
 
