@@ -1,6 +1,6 @@
-using FilteredArnoldi
+using FilteredMatrices
 using Test
 
-@testset "FilteredArnoldi.jl" begin
+@testset "FilteredMatrices.jl" begin
     # Write your tests here.
 end

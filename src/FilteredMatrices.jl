@@ -1,4 +1,4 @@
-module FilteredArnoldi
+module FilteredMatrices
 
 using LinearMaps, KrylovKit
 
