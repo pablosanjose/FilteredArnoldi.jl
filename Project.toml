@@ -4,7 +4,9 @@ authors = ["Pablo San-Jose <pablo.sanjose@csic.es>", "Bruno Amorim <amorim.bac@g
 version = "0.1.0"
 
 [deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LinearMaps = "7a12625a-238d-50fd-b39a-03d52299707e"
+UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
 [compat]
 julia = "1"
