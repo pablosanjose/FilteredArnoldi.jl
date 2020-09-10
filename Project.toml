@@ -1,0 +1,13 @@
+name = "FilteredArnoldi"
+uuid = "d9af566e-5b8c-4205-a764-d8c3ac5960e2"
+authors = ["Pablo San-Jose <pablo.sanjose@csic.es>", "Bruno Amorim <amorim.bac@gmail.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
