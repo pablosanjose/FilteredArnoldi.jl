@@ -2,9 +2,22 @@ module FilteredMatrices
 
 using LinearAlgebra, LinearMaps, UnPack
 
-export delta, Kernels
+export delta, order_estimate, Kernels
 
-function delta(H::AbstractMatrix{T}, ε; range = bandrange(H), order = defaultorder(H), kernel = (n, order) -> 1) where {T<:Number}
+"""
+    delta(H::AbstractMatrix{<:Number}, ε::Number; range, order = 50, kernel = missing)
+
+Construct a `LinearMap` that acts like matrix `δ_K(ε-H)`, where `δ_K` is a Chebyshev
+expansion of a Delta function to `order = K`. See `order_estimate` for estimators based on
+the desired energy resolution. The `range = (εmin, εmax)` of the spectrum of `H` needs to be
+provided for convergence. The `kernel` is a function `k(n, order)`. Built-in kernels are:
+    - missing                 : no kernel
+    - Kernels.Jackson         : Jackson kernel
+    - Kernels.Fejer           : Fejer kernel
+    - Kernels.Lanczos(M = 3)  : Lanczos kernel `sinc(n/order)^M` with integer `M`
+    - Kernels.Lorentz(λ = 4)  : Lorentz kernel `sinh(λ(1-n/order))/sinh(λ)` with real `λ`
+"""
+function delta(H::AbstractMatrix{T}, ε::Number; range, order = 50, kernel = (n, order) -> 1) where {T<:Number}
     M, N = size(H)
     M == N || throw(ArgumentError("Only square matrices are supported"))
     bracket = bandbracket(range)
@@ -14,11 +27,23 @@ function delta(H::AbstractMatrix{T}, ε; range = bandrange(H), order = defaultor
     LinearMap{T}((vdst, v0) -> delta_mul!(vdst, v0, args), N, N; ismutating = true, ishermitian = true)
 end
 
-bandrange(H) = (-1, 1)
-
 bandbracket((εmin, εmax)) = (εmax + εmin)/2, abs(εmax - εmin)
 
-defaultorder(H) = 10 #round(Int, sqrt(size(H,1)))
+"""
+    order_estimate(ε, Δε, range)
+
+Estimate the Chebyshev expansion order to achieve a resolution `Δε` at energy `ε` within a
+`range = (εmin, εmax)`. In terms of normalized energies `σ` and `Δσ` in a `(-1,1)` window,
+the required order must be greater than 4π*sqrt(1-σ^2)/Δσ. The prefactor `4` is approximate
+and can depend on the kernel used and the definition of resolution.
+"""
+function order(ε, Δε, range)
+    (center, halfwidth) = bandbracket(range)
+    σ = (ε - center)/halfwidth
+    abs(σ) < 1 || throw(ArgumentError("Energy outside band range"))
+    Δσ = Δε/halfwidth
+    return ceil(Int, 4π*sqrt(1-σ^2)/Δσ)
+end
 
 function delta_mul!(vdst::AbstractVector{T}, v0, args) where {T}
     @unpack H, ε, bracket, order, v, v´, kernel = args
@@ -68,9 +93,9 @@ Jackson(n, order) =
 
 Fejer(n, order) = 1 - n/order
 
-Lorentz(λ = 4) = (n, order) -> sinh(λ*(1-n/order))/sinh(λ)
+Lorentz(λ::Real = 4) = (n, order) -> sinh(λ*(1-n/order))/sinh(λ)
 
-Lanczos(M = 3) = (n, order) -> sinc(n/order)^M
+Lanczos(M::Integer = 3) = (n, order) -> sinc(n/order)^M
 
 end # module
 
