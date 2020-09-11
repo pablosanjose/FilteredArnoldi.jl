@@ -1,6 +1,6 @@
 module FilteredMatrices
 
-using LinearAlgebra, LinearMaps, UnPack
+using LinearAlgebra, LinearMaps, UnPack, Roots
 
 export delta, order_estimate, Kernels
 
@@ -43,6 +43,40 @@ function order_estimate(ε, Δε, range)
     abs(σ) < 1 || throw(ArgumentError("Energy outside band range"))
     Δσ = Δε/halfwidth
     return ceil(Int, 4π*sqrt(1-σ^2)/Δσ)
+end
+
+
+function drho_dx(x, γ, k, kernel)
+    
+    Uold = 1
+    Ucurrent = 2*x
+    μold = γ
+    μcurrent = 2*γ^2 - 1
+    
+    accu = kernel(1, k)*μold*1*Uold + kernel(2, k)*μcurrent*2*Ucurrent
+    
+    
+    for n=3:k
+        
+        Ucurrent, Uold = nextChebyshev(Ucurrent, Uold, x)
+        μcurrent, μold = nextChebyshev(μcurrent, μold, γ)
+        
+        accu += kernel(n, k)*μcurrent*n*Ucurrent
+        
+    end
+    
+    return accu
+    
+end
+"""
+    centeredfilter(ε, order, kernel)
+
+For a given energy ε within a `(-1,1)` window, order expansion and kernel, determines the optimal parameter, γ, such that the filter has a maximum at ε.
+"""
+function centeredfilter(ε, order, kernel)
+    
+    return find_zero(γ -> drho_dx(ε, γ, order, kernel), ε)
+    
 end
 
 function delta_mul!(vdst::AbstractVector{T}, v0, args) where {T}
