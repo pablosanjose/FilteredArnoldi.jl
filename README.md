@@ -11,6 +11,31 @@ The package defines the method `delta(H, σ; order = K)` which produces `LinearM
 Since the maximum of `δ_K(ε-σ)` is only at `ε = σ` in the large-`K` limit, the method is not guaranteed to return the eigenpairs in strict order from `σ` unless `K` is large enough.
 
 # Usage example
+In this example we compute the zero energy eigenstates of an SSH model using KrylovKit and FilteredMatrices. The system is constructed with Quantica.jl.
+```julia
+julia> using Quantica, KrylovKit, FilteredMatrices
 
-```
+julia> ssh = LatticePresets.linear() |> hamiltonian(hopping(1)) |> unitcell(1000, modifiers = @hopping!((t,r,dr) -> t + 0.2*mod(r[1],2))) |> unitcell
+Hamiltonian{<:Lattice} : Hamiltonian on a 0D Lattice in 1D space
+  Bloch harmonics  : 1 (SparseMatrixCSC, sparse)
+  Harmonic size    : 1000 × 1000
+  Orbitals         : ((:a,),)
+  Element type     : scalar (Complex{Float64})
+  Onsites          : 0
+  Hoppings         : 1998
+  Coordination     : 1.998
+
+julia> m = bloch(ssh);
+
+julia> emin, emax = eigsolve(m, 1, :SR)[1][1], eigsolve(m, 1, :LR)[1][1]
+(-2.399988200192531, 2.3999882601634264)
+
+julia> o = order_estimate(0, 0.05, (emin, emax))
+1207
+
+julia> d = delta(m, 0, (emin, emax), order = o);
+
+julia> states = eigsolve(x -> d*x, size(m,1), 2, :LR)[2];
+
+julia> using Plots; plot(real(states))
 ```
