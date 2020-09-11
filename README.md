@@ -11,7 +11,7 @@ The package defines the method `delta(H, σ; order = K)` which produces `LinearM
 Since the maximum of `δ_K(ε-σ)` is only at `ε = σ` in the large-`K` limit, the method is not guaranteed to return the eigenpairs in strict order from `σ` unless `K` is large enough.
 
 # Usage example
-In this example we compute the zero energy eigenstates of an SSH model using KrylovKit and FilteredMatrices. The system is constructed with Quantica.jl.
+In this example we compute the zero energy eigenstates of an SSH model using KrylovKit.jl and FilteredMatrices.jl. The system is constructed with Quantica.jl.
 ```julia
 julia> using Quantica, KrylovKit, FilteredMatrices
 
