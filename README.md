@@ -39,3 +39,4 @@ julia> states = eigsolve(x -> d*x, size(m,1), 2, :LR)[2];
 
 julia> using Plots; plot(real(states))
 ```
+![image](https://user-images.githubusercontent.com/4310809/92922536-4b7b3b00-f436-11ea-8d13-f474fc89e142.png)
