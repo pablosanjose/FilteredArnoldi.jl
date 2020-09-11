@@ -5,19 +5,19 @@ using LinearAlgebra, LinearMaps, UnPack
 export delta, order_estimate, Kernels
 
 """
-    delta(H::AbstractMatrix{<:Number}, ε::Number; range, order = 50, kernel = missing)
+    delta(H::AbstractMatrix{<:Number}, ε::Number, range; order = 50, kernel = missing)
 
 Construct a `LinearMap` that acts like matrix `δ_K(ε-H)`, where `δ_K` is a Chebyshev
 expansion of a Delta function to `order = K`. See `order_estimate` for estimators based on
-the desired energy resolution. The `range = (εmin, εmax)` of the spectrum of `H` needs to be
-provided for convergence. The `kernel` is a function `k(n, order)`. Built-in kernels are:
+the desired energy resolution. A `range = (εmin, εmax)` of the spectrum of `H` is needed to
+ensure convergence. The `kernel` is a function `k(n, order)`. Built-in kernels are:
     - missing                 : no kernel
     - Kernels.Jackson         : Jackson kernel
     - Kernels.Fejer           : Fejer kernel
     - Kernels.Lanczos(M = 3)  : Lanczos kernel `sinc(n/order)^M` with integer `M`
     - Kernels.Lorentz(λ = 4)  : Lorentz kernel `sinh(λ(1-n/order))/sinh(λ)` with real `λ`
 """
-function delta(H::AbstractMatrix{T}, ε::Number; range, order = 50, kernel = (n, order) -> 1) where {T<:Number}
+function delta(H::AbstractMatrix{T}, ε::Number, range; order = 50, kernel = (n, order) -> 1) where {T<:Number}
     M, N = size(H)
     M == N || throw(ArgumentError("Only square matrices are supported"))
     bracket = bandbracket(range)
