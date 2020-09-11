@@ -37,7 +37,7 @@ Estimate the Chebyshev expansion order to achieve a resolution `Δε` at energy 
 the required order must be greater than 4π*sqrt(1-σ^2)/Δσ. The prefactor `4` is approximate
 and can depend on the kernel used and the definition of resolution.
 """
-function order(ε, Δε, range)
+function order_estimate(ε, Δε, range)
     (center, halfwidth) = bandbracket(range)
     σ = (ε - center)/halfwidth
     abs(σ) < 1 || throw(ArgumentError("Energy outside band range"))
